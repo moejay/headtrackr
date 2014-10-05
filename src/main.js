@@ -27,7 +27,7 @@
  */
 
 var headtrackr = {};
-headtrackr.rev = 2;
+headtrackr.rev = 2.1;
 
 /**
  * @constructor
@@ -53,7 +53,11 @@ headtrackr.Tracker = function(params) {
 	if (params.cameraOffset === undefined) params.cameraOffset = 11.5;
 	if (params.calcAngles === undefined) params.calcAngles = false;
 	if (params.headPosition === undefined) params.headPosition = true;
-	
+    if (params.minFaceWidth === undefined ) params.minFaceWidth = 20;
+    if (params.minFaceHeight === undefined ) params.minFaceHeight = 20;
+    if (params.maxFaceWidth === undefined ) params.maxFaceWidth = Infinity;
+    if (params.maxFaceHeight === undefined ) params.maxFaceHeight = Infinity;
+
 	var ui, smoother, facetracker, headposition, canvasContext, videoElement, detector;
 	var detectionTimer;
 	var fov = 0;
@@ -227,7 +231,8 @@ headtrackr.Tracker = function(params) {
 				this.status = 'tracking';
 				
 				//check if we've lost tracking of face
-				if (faceObj.width == 0 || faceObj.height == 0) {
+				if (faceObj.width < params.minFaceWidth || faceObj.height < params.minFaceHeight ||
+                    faceObj.width > params.maxFaceWidth || faceObj.height > params.maxFaceHeight) {
 					if (params.retryDetection) {
 						// retry facedetection
 						headtrackerStatus("redetecting");
